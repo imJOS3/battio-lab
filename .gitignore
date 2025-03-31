@@ -10,6 +10,11 @@ venv/
 # Editor files
 .vscode/
 .idea/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.idea/
 
 # Logs and databases
 *.log

@@ -1,22 +1,18 @@
 from flask import Flask
-from database import db
-from routes.empleados import empleados_bp
-from routes.usuarios import usuarios_bp
+from routes.employee_routes import employee_bp
+from routes.user_routes import user_bp
+from routes.role_routes import role_bp
 
 app = Flask(__name__)
 
-# Configuración de MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'tu_contraseña'
-app.config['MYSQL_DB'] = 'battiolab'
+# Registrar Blueprints (rutas)
+app.register_blueprint(employee_bp)
+app.register_blueprint(user_bp)
+app.register_blueprint(role_bp)
 
-# Inicializar base de datos
-db.init_app(app)
+@app.route("/")
+def index():
+    return "Bienvenido a Battio Lab API"
 
-# Registrar rutas
-app.register_blueprint(empleados_bp, url_prefix='/empleados')
-app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+if __name__ == "__main__":
+    app.run(debug=True)
