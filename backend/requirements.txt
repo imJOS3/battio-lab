@@ -4,3 +4,5 @@ Flask-Cors
 Flask-SQLAlchemy
 mysql-connector-python
 dotenv
+flask-jwt-extended
+flask-bcrypt
