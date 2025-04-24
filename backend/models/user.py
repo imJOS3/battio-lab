@@ -5,7 +5,7 @@ class User:
         self.idRol = idRol
         self.username = username
         self.contrasena = contrasena
-
+#fdf
     def to_dict(self):
         return {
             "idUsuario": self.idUsuario,
