@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import JWTManager
 from services.auth_service import authenticate_user, get_current_user
 
 auth_bp = Blueprint("auth", __name__)

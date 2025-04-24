@@ -1,8 +1,10 @@
 import os
 from flask import jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token, jwt_required, get_jwt_identity
+)
 from dotenv import load_dotenv
-from database.db import get_db_connection  # Asegúrate de importar correctamente
+from database.db import get_db_connection  # Asegúrate de que este funcione correctamente
 
 # Cargar variables de entorno
 load_dotenv()
@@ -10,8 +12,13 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 def generate_token(user):
     """Genera un token JWT para el usuario."""
-    access_token = create_access_token(identity=user["idUsuario"])
-    return {"access_token": access_token}
+    access_token = create_access_token(identity=str(user["idUsuario"]))
+    
+    # Devuelvo el token y el idRol del usuario
+    return jsonify({
+        "access_token": access_token,
+        "idRol": user["idRol"]
+    }), 200
 
 def authenticate_user(username, password):
     """Verifica si el usuario existe y la contraseña es correcta."""
@@ -25,9 +32,10 @@ def authenticate_user(username, password):
     conn.close()
 
     if user and user["password"] == password:
+        # Genera el token de acceso con el idRol incluido
         return generate_token(user)
-    
-    return {"error": "Credenciales incorrectas"}, 401
+
+    return jsonify({"error": "Credenciales incorrectas"}), 401
 
 @jwt_required()
 def get_current_user():
@@ -42,6 +50,6 @@ def get_current_user():
     conn.close()
 
     if user:
-        return jsonify(user)
+        return jsonify(user), 200
 
     return jsonify({"error": "Usuario no encontrado"}), 404

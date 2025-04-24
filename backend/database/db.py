@@ -4,7 +4,9 @@ from config import DB_CONFIG
 def get_db_connection():
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
+        print("✅ Conexión exitosa a MySQL")  # Puedes quitarlo en producción
         return connection
     except mysql.connector.Error as err:
-        print(f"Error al conectar a MySQL: {err}")
+        print(f"❌ Error al conectar a MySQL: {err}")
         return None
+
