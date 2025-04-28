@@ -2,14 +2,14 @@ import tkinter as tk
 from tkinter import messagebox, font as tkfont
 import requests
 
+from admin_panel import AdminPanel  # 👈 Importación del panel de administración
+
 class LoginApp:
     def __init__(self, root):
         self.root = root
         self.root.title("BATTIO LAB")
         self.root.configure(bg="#7af40d")
-
-        # Pantalla completa dentro del marco de Windows
-        self.root.state('zoomed')  # Equivalente a maximizado
+        self.root.state('zoomed')  # Pantalla completa
 
         # Fuente personalizada
         self.custom_font = tkfont.Font(family="Helvetica", size=16)
@@ -49,14 +49,37 @@ class LoginApp:
         try:
             response = requests.post(url, json=data)
             if response.status_code == 200:
-                token = response.json().get("access_token")
-                #messagebox.showinfo("Éxito", "Inicio de sesión exitoso.")
-                messagebox.showinfo("Éxito", f"Inicio de sesión exitoso.\nToken: {token}")
-    # Aquí podrías guardar el token en memoria o pasar a otra ventana
+                result = response.json()
+                token = result.get("access_token")
+                id_rol = result.get("idRol")
+
+                messagebox.showinfo("Éxito", f"Inicio de sesión exitoso.")
+
+                self.root.destroy()  # Cierra la ventana de login
+
+                if id_rol == 1:
+                    open_admin_panel()
+                elif id_rol == 2:
+                    messagebox.showinfo("Redirección", "Aquí irá el panel del técnico.")
+                    # Aquí puedes invocar otra función como open_technician_panel()
+                else:
+                    messagebox.showerror("Error", "Rol no reconocido.")
             else:
                 messagebox.showerror("Error", "Credenciales incorrectas.")
         except requests.exceptions.RequestException:
             messagebox.showerror("Error", "No se pudo conectar con el servidor.")
+
+# Función para abrir el Panel de Administración
+def open_admin_panel():
+    root = tk.Tk()
+    app = AdminPanel(root, return_to_login)
+    root.mainloop()
+
+# Función para volver al login desde el panel
+def return_to_login():
+    root = tk.Tk()
+    app = LoginApp(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     root = tk.Tk()
