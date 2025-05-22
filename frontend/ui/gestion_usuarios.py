@@ -14,7 +14,8 @@ class GestionUsuarios(tk.Frame):
             host="localhost",
             user="root",
             password="",
-            database="batio_lab"
+            #database="batio_lab"
+            database="battiolab"
         )
         self.cursor = self.conexion.cursor(dictionary=True)
 

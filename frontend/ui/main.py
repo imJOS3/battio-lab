@@ -3,6 +3,7 @@ from tkinter import messagebox, font as tkfont
 import requests
 
 from admin_panel import AdminPanel  # 👈 Importación del panel de administración
+from technician_panel import TechnicianPanel  # 👈 Importación del panel de técnico
 
 class LoginApp:
     def __init__(self, root):
@@ -60,8 +61,7 @@ class LoginApp:
                 if id_rol == 1:
                     open_admin_panel()
                 elif id_rol == 2:
-                    messagebox.showinfo("Redirección", "Aquí irá el panel del técnico.")
-                    # Aquí puedes invocar otra función como open_technician_panel()
+                    open_technician_panel()  # 👈 Abre panel técnico
                 else:
                     messagebox.showerror("Error", "Rol no reconocido.")
             else:
@@ -73,6 +73,12 @@ class LoginApp:
 def open_admin_panel():
     root = tk.Tk()
     app = AdminPanel(root, return_to_login)
+    root.mainloop()
+
+# Función para abrir el Panel Técnico
+def open_technician_panel():
+    root = tk.Tk()
+    app = TechnicianPanel(root, return_to_login)
     root.mainloop()
 
 # Función para volver al login desde el panel

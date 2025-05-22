@@ -1,12 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
-from gestion_usuarios import GestionUsuarios  # Importamos el módulo de gestión de usuarios
-from gestion_productos import GestionProductos  # Importamos el módulo de gestión de productos
-#yo
-class AdminPanel:
+
+class TechnicianPanel:
     def __init__(self, root, on_logout_callback):
         self.root = root
-        self.root.title("BATTIOLAB - Panel de Administración")
+        self.root.title("BATTIOLAB - Panel del Técnico")
         self.root.geometry("900x600")
         self.root.configure(bg="#DFF6DD")
 
@@ -22,11 +20,9 @@ class AdminPanel:
 
         # Opciones del menú lateral
         options = [
-            "Gestión de Usuarios",
-            "Gestión de Productos",  # Nueva opción agregada
-            "Control de Stock",
-            "Historial General",
-            "Estado de Sincronización"
+            "Nuevo Trabajo",
+            "Trabajos en Progreso",
+            "Historial de Trabajos"
         ]
 
         for option in options:
@@ -39,21 +35,17 @@ class AdminPanel:
         self.main_area = tk.Frame(root, bg="#DFF6DD")
         self.main_area.pack(side="right", fill="both", expand=True)
 
-        # Título superior
-        title_main = tk.Label(self.main_area, text="Panel Principal", bg="#DFF6DD", fg="#0B3D0B",
+        title_main = tk.Label(self.main_area, text="Panel del Técnico", bg="#DFF6DD", fg="#0B3D0B",
                               font=("Helvetica", 20, "bold"))
         title_main.pack(pady=20)
 
-        # Botón Cerrar sesión
         logout_btn = tk.Button(self.main_area, text="Cerrar sesión", bg="#0B3D0B", fg="white",
                                font=("Helvetica", 10), command=self.logout)
         logout_btn.place(relx=0.95, rely=0.02, anchor="ne")
 
-        # Contenedor para cambiar frames dinámicamente
         self.content_frame = tk.Frame(self.main_area, bg="#DFF6DD")
         self.content_frame.pack(fill="both", expand=True)
 
-        # Mostrar botones funcionales (solo al inicio)
         self.create_main_buttons(self.content_frame, options)
 
     def create_main_buttons(self, parent, texts):
@@ -72,19 +64,19 @@ class AdminPanel:
             btn.grid(row=row, column=col, padx=20, pady=15)
 
     def cargar_modulo(self, opcion):
-        # Limpiamos el contenido actual
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
-        # Cargar el módulo correspondiente
-        if opcion == "Gestión de Usuarios":
-            frame = GestionUsuarios(self.content_frame)
-            frame.pack(fill="both", expand=True)
-        elif opcion == "Gestión de Productos":
-            frame = GestionProductos(self.content_frame)  # Cargamos el módulo de gestión de productos
-            frame.pack(fill="both", expand=True)
-        else:
-            label = tk.Label(self.content_frame, text=f"Módulo en desarrollo: {opcion}",
+        if opcion == "Nuevo Trabajo":
+            label = tk.Label(self.content_frame, text="Formulario: Nuevo Trabajo (a implementar)", 
+                             font=("Helvetica", 14), bg="#DFF6DD", fg="#0B3D0B")
+            label.pack(pady=100)
+        elif opcion == "Trabajos en Progreso":
+            label = tk.Label(self.content_frame, text="Trabajos en Progreso (a implementar)", 
+                             font=("Helvetica", 14), bg="#DFF6DD", fg="#0B3D0B")
+            label.pack(pady=100)
+        elif opcion == "Historial de Trabajos":
+            label = tk.Label(self.content_frame, text="Historial de Trabajos del Técnico (a implementar)", 
                              font=("Helvetica", 14), bg="#DFF6DD", fg="#0B3D0B")
             label.pack(pady=100)
 
