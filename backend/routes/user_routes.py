@@ -8,7 +8,7 @@ from services.user_service import (
     delete_user,
 )
 
-user_bp = Blueprint("user", __name__)
+user_bp = Blueprint("api", __name__)
 
 @user_bp.route("/users", methods=["GET"])
 @jwt_required()

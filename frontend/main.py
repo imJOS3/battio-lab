@@ -1,15 +1,10 @@
 import tkinter as tk
+from ui.login import LoginApp, run_login
 from tkinter import messagebox, font as tkfont
-import requests
-from login import run_login
+from ui.admin.admin_panel import AdminPanel
 
-# Colores base
-
-if __name__ == "__main__":
-    run_login()
 # Panel de administración
 def open_admin_panel():
-    from admin_panel import AdminPanel
     root = tk.Tk()
     app = AdminPanel(root, return_to_login)
     root.mainloop()
@@ -20,8 +15,5 @@ def return_to_login():
     app = LoginApp(root)
     root.mainloop()
 
-
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = LoginApp(root)
-    root.mainloop()
+    run_login()
