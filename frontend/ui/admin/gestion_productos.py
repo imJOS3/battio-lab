@@ -3,6 +3,7 @@ from tkinter import messagebox, ttk
 from api.productos_api import (
     obtener_productos, crear_producto, actualizar_producto, eliminar_producto
 )
+import traceback
 
 class GestionProductos(tk.Frame):
     def __init__(self, parent):
@@ -32,9 +33,13 @@ class GestionProductos(tk.Frame):
     def listar_productos(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
-        productos = obtener_productos()
-        for p in productos:
-            self.tree.insert("", tk.END, values=tuple(p[col] for col in self.tree["columns"]), tags=(p["ID_Implemento"],))
+        try:
+            productos = obtener_productos()
+            for p in productos:
+                self.tree.insert("", tk.END, values=tuple(p[col] for col in self.tree["columns"]), tags=(p["ID_Implemento"],))
+        except Exception as e:
+            traceback.print_exc()
+            messagebox.showerror("Error", f"No se pudo cargar la lista de productos.\n{str(e)}")
 
     def crear_producto(self):
         self.abrir_formulario_producto()
@@ -54,11 +59,15 @@ class GestionProductos(tk.Frame):
             return
         codigo = self.tree.item(seleccionado[0], 'values')[0]
         if messagebox.askyesno("Confirmar", "¿Eliminar producto?"):
-            if eliminar_producto(codigo):
-                messagebox.showinfo("Éxito", "Producto eliminado.")
-                self.listar_productos()
-            else:
-                messagebox.showerror("Error", "No se pudo eliminar.")
+            try:
+                if eliminar_producto(codigo):
+                    messagebox.showinfo("Éxito", "Producto eliminado.")
+                    self.listar_productos()
+                else:
+                    messagebox.showerror("Error", "No se pudo eliminar el producto.")
+            except Exception as e:
+                traceback.print_exc()
+                messagebox.showerror("Error", f"Ocurrió un error al eliminar el producto:\n{str(e)}")
 
     def abrir_formulario_producto(self, datos=None):
         form = tk.Toplevel(self)
@@ -87,6 +96,7 @@ class GestionProductos(tk.Frame):
                 messagebox.showinfo("Éxito", "Producto guardado.")
                 form.destroy()
             except Exception as e:
-                messagebox.showerror("Error", str(e))
+                traceback.print_exc()
+                messagebox.showerror("Error", f"Ocurrió un error al guardar el producto:\n{str(e)}")
 
         tk.Button(form, text="Guardar", command=guardar).grid(row=len(entries), columnspan=2, pady=10)

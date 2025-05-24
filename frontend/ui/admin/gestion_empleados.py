@@ -25,13 +25,16 @@ class GestionEmpleados(tk.Frame):
         self.cargar_empleados()
 
     def cargar_empleados(self):
-        self.tree.delete(*self.tree.get_children())
-        empleados = empleados_api.obtener_empleados()
-        for e in empleados:
-            self.tree.insert("", tk.END, values=(
-                e["idEmpleados"], e["nombre"], e["apellido"], e["correo"], e["numeroTel"],
-                e["direccion"], e["fechaIngreso"], e["fechaSalida"], e["estado"]
-            ))
+        try:
+            self.tree.delete(*self.tree.get_children())
+            empleados = empleados_api.obtener_empleados()
+            for e in empleados:
+                self.tree.insert("", tk.END, values=(
+                    e["idEmpleados"], e["nombre"], e["apellido"], e["correo"], e["numeroTel"],
+                    e["direccion"], e["fechaIngreso"], e["fechaSalida"], e["estado"]
+                ))
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def crear_empleado(self):
         self.formulario_empleado()
@@ -55,11 +58,12 @@ class GestionEmpleados(tk.Frame):
         id_empleado = datos[0]
 
         if messagebox.askyesno("Confirmación", "¿Eliminar este empleado?"):
-            if empleados_api.eliminar_empleado(id_empleado):
-                messagebox.showinfo("Éxito", "Empleado eliminado")
-                self.cargar_empleados()
-            else:
-                messagebox.showerror("Error", "No se pudo eliminar")
+            try:
+                if empleados_api.eliminar_empleado(id_empleado):
+                    messagebox.showinfo("Éxito", "Empleado eliminado")
+                    self.cargar_empleados()
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
 
     def formulario_empleado(self, datos=None):
         ventana = tk.Toplevel(self)
@@ -92,15 +96,19 @@ class GestionEmpleados(tk.Frame):
                 "estado": entradas["Estado"].get(),
             }
 
-            if datos:
-                id_empleado = datos[0]
-                empleados_api.actualizar_empleado(id_empleado, data)
-                messagebox.showinfo("Éxito", "Empleado modificado")
-            else:
-                empleados_api.crear_empleado(data)
-                messagebox.showinfo("Éxito", "Empleado creado")
+            try:
+                if datos:
+                    id_empleado = datos[0]
+                    empleados_api.actualizar_empleado(id_empleado, data)
+                    messagebox.showinfo("Éxito", "Empleado modificado")
+                else:
+                    empleados_api.crear_empleado(data)
+                    messagebox.showinfo("Éxito", "Empleado creado")
 
-            ventana.destroy()
-            self.cargar_empleados()
+                ventana.destroy()
+                self.cargar_empleados()
+
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
 
         tk.Button(ventana, text="Guardar", command=guardar).grid(row=len(campos), columnspan=2, pady=10)
