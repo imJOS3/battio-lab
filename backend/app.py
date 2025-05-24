@@ -1,37 +1,28 @@
-from flask import Flask
-from flask_cors import CORS  # ✅ Agregado
-from flask_jwt_extended import JWTManager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from routes.router import router  # debe ser un APIRouter, no blueprints
 import os
 from dotenv import load_dotenv
 
-# Importa tus rutas
-from routes.employee_routes import employee_bp
-from routes.user_routes import user_bp
-from routes.role_routes import role_bp
-from routes.auth_routes import auth_bp  # ✅ Asegúrate de que existe este archivo
-
 load_dotenv()
 
-app = Flask(__name__)
+app = FastAPI(title="Battio Lab API")
 
-# Configuración de JWT
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "clave-secreta-default")  # puedes usar un valor por defecto
-jwt = JWTManager(app)
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # o restringe si quieres más seguridad
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# ✅ Habilitar CORS para permitir solicitudes desde el frontend (como Tkinter, etc.)
-CORS(app)
+# Registrar rutas
+app.include_router(router, prefix="/api")
 
-# Registrar Blueprints (rutas)
-app.register_blueprint(employee_bp)
-app.register_blueprint(user_bp)
-app.register_blueprint(role_bp)
-
-# Aquí agregamos el prefijo '/auth' para las rutas de autenticación
-app.register_blueprint(auth_bp, url_prefix="/auth")
-
-@app.route("/")
+@app.get("/")
 def index():
-    return "Bienvenido a Battio Lab API"
+    return {"mensaje": "Bienvenido a Battio Lab API"}
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Ejecutar con uvicorn (NO usar python app.py directamente)
+# Terminal: uvicorn app:app --reload
