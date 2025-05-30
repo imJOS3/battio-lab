@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Registrar rutas
-app.include_router(router, prefix="/api")
+app.include_router(router)
 
 @app.get("/")
 def index():

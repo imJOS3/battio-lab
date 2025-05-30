@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from models.Usuario import Usuario
-from utils.security import hash_password, verify_password
 
 class UsuarioService:
     def __init__(self, db: Session):
@@ -11,7 +10,7 @@ class UsuarioService:
             idEmpleado=usuario_data["idEmpleado"],
             idRol=usuario_data["idRol"],
             username=usuario_data["username"],
-            password=hash_password(usuario_data["password"])
+            password=usuario_data["password"]  # Sin hash
         )
         self.db.add(usuario)
         self.db.commit()
@@ -28,10 +27,10 @@ class UsuarioService:
         usuario = self.db.query(Usuario).filter(Usuario.idUsuario == idUsuario).first()
         if not usuario:
             return None
+
         for clave, valor in datos_actualizados.items():
-            if clave == "password":
-                valor = hash_password(valor)
             setattr(usuario, clave, valor)
+
         self.db.commit()
         return usuario
 
@@ -41,3 +40,9 @@ class UsuarioService:
             self.db.delete(usuario)
             self.db.commit()
         return usuario
+
+    def verificar_credenciales(self, username, password):
+        usuario = self.db.query(Usuario).filter_by(username=username).first()
+        if usuario and password == usuario.password:
+            return usuario
+        return None
