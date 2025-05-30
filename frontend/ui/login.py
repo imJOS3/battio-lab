@@ -1,6 +1,8 @@
+# ui/login.py
+
 import tkinter as tk
 from tkinter import messagebox, font as tkfont
-import requests
+from api.auth_api import login_usuario  
 
 class LoginApp:
     def __init__(self, root):
@@ -40,13 +42,34 @@ class LoginApp:
             messagebox.showwarning("Error", "Por favor, completa todos los campos.")
             return
 
-        url = "http://127.0.0.1:5000/auth/login"
-        data = {"username": username, "password": password}
+        result = login_usuario(username, password)
 
-        try:
-            response = requests.post(url, json=data)
-            if response.status_code == 200:
-                result = response.json()
+        if result:
+            user_data = result.get("user", {})
+            id_rol = user_data.get("idRol")
+
+            messagebox.showinfo("Éxito", "Inicio de sesión exitoso.")
+            self.root.destroy()
+
+            if id_rol == 1:
+                self.open_admin_panel()
+            elif id_rol == 2:
+                messagebox.showinfo("Redirección", "Aquí irá el panel del técnico.")
+            else:
+                messagebox.showerror("Error", f"Rol no reconocido: {id_rol}")
+        else:
+            messagebox.showerror("Error", "Credenciales incorrectas o error de servidor.")
+
+            username = self.entry_user.get()
+            password = self.entry_pass.get()
+
+            if not username or not password:
+                messagebox.showwarning("Error", "Por favor, completa todos los campos.")
+                return
+
+            result = login_usuario(username, password)
+
+            if result:
                 id_rol = result.get("idRol")
 
                 messagebox.showinfo("Éxito", "Inicio de sesión exitoso.")
@@ -59,16 +82,13 @@ class LoginApp:
                 else:
                     messagebox.showerror("Error", "Rol no reconocido.")
             else:
-                messagebox.showerror("Error", "Credenciales incorrectas.")
-        except requests.exceptions.RequestException:
-            messagebox.showerror("Error", "No se pudo conectar con el servidor.")
+                messagebox.showerror("Error", "Credenciales incorrectas o error de servidor.")
 
     def open_admin_panel(self):
         import ui.admin.admin_panel as admin_panel
         root = tk.Tk()
         admin_panel.AdminPanel(root, run_login)
         root.mainloop()
-
 
 def run_login():
     root = tk.Tk()
@@ -90,4 +110,3 @@ def run_login():
 
     app = LoginApp(root)
     root.mainloop()
-
