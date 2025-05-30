@@ -1,6 +1,6 @@
 import requests
 
-API_URL = "http://localhost:5000/empleados"
+API_URL = "http://localhost:5000/api/empleados"
 
 def obtener_empleados():
     try:

@@ -37,13 +37,14 @@ class GestionClientes(tk.Frame):
         try:
             clientes = obtener_clientes()
             for c in clientes:
+                estado_str = "Activo" if c["estado"] else "Inactivo"
                 self.tree.insert("", tk.END, values=(
                     c["nombre"],
                     c["apellido"],
                     c["correo"],
-                    c["numeroTel"],
+                    c["telefono"],
                     c["direccion"],
-                    c["estado"]
+                    estado_str
                 ), tags=(c["idCliente"],))
         except Exception as e:
             print(f"Error al obtener clientes: {e}")
@@ -78,7 +79,7 @@ class GestionClientes(tk.Frame):
         ventana = tk.Toplevel(self)
         ventana.title("Formulario Cliente")
 
-        campos = ["nombre", "apellido", "correo", "numeroTel", "direccion"]
+        campos = ["nombre", "apellido", "correo", "telefono", "direccion"]
         entradas = {}
 
         for i, campo in enumerate(campos):
@@ -86,31 +87,33 @@ class GestionClientes(tk.Frame):
             entrada = tk.Entry(ventana)
             entrada.grid(row=i, column=1, padx=5, pady=5)
             if cliente:
-                entrada.insert(0, cliente[campo])
+                entrada.insert(0, cliente.get(campo, ""))
             entradas[campo] = entrada
 
-        estado_var = tk.StringVar(value=cliente["estado"] if cliente else "Activo")
+        estado_var = tk.StringVar(value="Activo" if (cliente and cliente["estado"]) else "Inactivo")
         tk.Label(ventana, text="Estado:").grid(row=len(campos), column=0, padx=5, pady=5)
         estado_combo = ttk.Combobox(ventana, textvariable=estado_var, values=["Activo", "Inactivo"], state="readonly")
         estado_combo.grid(row=len(campos), column=1, padx=5, pady=5)
 
         def guardar_cliente():
             datos = {k: entradas[k].get() for k in entradas}
-            datos["estado"] = estado_var.get()
+            datos["estado"] = True if estado_var.get() == "Activo" else False
 
             if any(not v for v in datos.values()):
                 messagebox.showwarning("Advertencia", "Complete todos los campos.")
                 return
 
-            if cliente:
-                modificar_cliente(cliente["idCliente"], datos)
-                messagebox.showinfo("Éxito", "Cliente actualizado correctamente.")
-            else:
-                crear_cliente(datos)
-                messagebox.showinfo("Éxito", "Cliente creado correctamente.")
-
-            self.listar_clientes()
-            ventana.destroy()
+            try:
+                if cliente:
+                    modificar_cliente(cliente["idCliente"], datos)
+                    messagebox.showinfo("Éxito", "Cliente actualizado correctamente.")
+                else:
+                    crear_cliente(datos)
+                    messagebox.showinfo("Éxito", "Cliente creado correctamente.")
+                self.listar_clientes()
+                ventana.destroy()
+            except Exception as e:
+                messagebox.showerror("Error", f"Ocurrió un error: {e}")
 
         tk.Button(ventana, text="Guardar", command=guardar_cliente).grid(row=len(campos)+1, columnspan=2, pady=10)
 

@@ -1,6 +1,6 @@
 import requests
 
-API_URL = "http://localhost:5000/productos"
+API_URL = "http://localhost:5000/api/productos"
 
 def obtener_productos():
     response = requests.get(API_URL)

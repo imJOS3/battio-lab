@@ -1,6 +1,6 @@
 import requests
 
-API_URL = "http://localhost:5000/precios-mano-obra"
+API_URL = "http://localhost:5000/api/precios-mano-obra"
 
 def obtener_precios():
     try:

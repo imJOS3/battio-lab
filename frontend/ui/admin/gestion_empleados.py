@@ -29,9 +29,13 @@ class GestionEmpleados(tk.Frame):
             self.tree.delete(*self.tree.get_children())
             empleados = empleados_api.obtener_empleados()
             for e in empleados:
+                fecha_ingreso = e["fechaIngreso"].split("T")[0] if e["fechaIngreso"] else ""
+                fecha_salida = e["fechaSalida"].split("T")[0] if e["fechaSalida"] else ""
+                estado = "Activo" if e["estado"] else "Inactivo"
+
                 self.tree.insert("", tk.END, values=(
-                    e["idEmpleados"], e["nombre"], e["apellido"], e["correo"], e["numeroTel"],
-                    e["direccion"], e["fechaIngreso"], e["fechaSalida"], e["estado"]
+                    e["idEmpleado"], e["nombre"], e["apellido"], e["correo"], e["numeroTel"],
+                    e["direccion"], fecha_ingreso, fecha_salida, estado
                 ))
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -85,6 +89,9 @@ class GestionEmpleados(tk.Frame):
                 entradas[campo].insert(0, datos[i + 1])  # +1 porque el primer dato es el ID
 
         def guardar():
+            estado_str = entradas["Estado"].get().lower()
+            estado_bool = True if estado_str in ["activo", "true", "1"] else False
+
             data = {
                 "nombre": entradas["Nombre"].get(),
                 "apellido": entradas["Apellido"].get(),
@@ -92,8 +99,8 @@ class GestionEmpleados(tk.Frame):
                 "numeroTel": entradas["Teléfono"].get(),
                 "direccion": entradas["Dirección"].get(),
                 "fechaIngreso": entradas["Ingreso"].get(),
-                "fechaSalida": entradas["Salida"].get(),
-                "estado": entradas["Estado"].get(),
+                "fechaSalida": entradas["Salida"].get() or None,
+                "estado": estado_bool
             }
 
             try:

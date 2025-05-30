@@ -28,10 +28,9 @@ class AdminPanel:
         self.options = [
             "Gestión de Usuarios",
             "Gestión de Productos",
-            # "Control de Stock",
             "Clientes",
             "Empleados",
-            # "Facturas",
+            "Facturas",
             "Precios Mano de Obra",
             # "Roles",
             "Servicios",

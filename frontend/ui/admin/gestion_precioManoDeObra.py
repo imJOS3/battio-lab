@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-import api.precio_mano_obra_api as precio_mano_obra_api
+from api import precio_mano_obra_api
+
 
 class GestionPrecioManoDeObra(tk.Frame):
     def __init__(self, parent):
@@ -27,7 +28,7 @@ class GestionPrecioManoDeObra(tk.Frame):
             self.tree.delete(item)
         precios = precio_mano_obra_api.obtener_precios()
         for p in precios:
-            self.tree.insert("", tk.END, values=(p["tipoServicio"], p["precioBase"]), tags=(p["tipoServicio"],))
+            self.tree.insert("", tk.END, values=(p["tipoServicio"], f'{p["precioBase"]:.2f}'), tags=(p["tipoServicio"],))
 
     def crear_precio(self):
         self.abrir_formulario()
@@ -67,7 +68,7 @@ class GestionPrecioManoDeObra(tk.Frame):
         if precio:
             entry_tipo.insert(0, precio["tipoServicio"])
             entry_tipo.config(state="disabled")
-            entry_precio.insert(0, precio["precioBase"])
+            entry_precio.insert(0, f'{precio["precioBase"]:.2f}')
 
         def guardar():
             tipo = entry_tipo.get().strip()
@@ -75,13 +76,32 @@ class GestionPrecioManoDeObra(tk.Frame):
             if not tipo or not precio_base:
                 messagebox.showwarning("Advertencia", "Todos los campos son obligatorios.")
                 return
-            data = {"tipoServicio": tipo, "precioBase": precio_base}
-            if precio:
-                precio_mano_obra_api.modificar_precio(data)
-            else:
-                precio_mano_obra_api.crear_precio(data)
+            try:
+                precio_valor = float(precio_base)
+            except ValueError:
+                messagebox.showwarning("Advertencia", "Precio Base debe ser un número válido.")
+                return
+
+            data = {"tipoServicio": tipo, "precioBase": precio_valor}
+            try:
+                if precio:
+                    precio_mano_obra_api.modificar_precio(data)
+                else:
+                    precio_mano_obra_api.crear_precio(data)
+            except ValueError as e:
+                messagebox.showerror("Error", str(e))
+                return
+
             self.listar_precios()
             ventana.destroy()
             messagebox.showinfo("Éxito", "Registro guardado correctamente.")
 
         tk.Button(ventana, text="Guardar", command=guardar).grid(row=2, columnspan=2, pady=10)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Sistema de Gestión")
+    root.geometry("450x350")
+    app = GestionPrecioManoDeObra(root)
+    app.pack(fill="both", expand=True)
+    root.mainloop()
